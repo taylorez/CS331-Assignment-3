@@ -18,7 +18,7 @@ void convert(vector<string> temp, char* file);
 //Start Classification
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
 void classification(vector<string> data, vector<int> labels);
-
+void printToFile(vector<string> vocab, vector<string> label);
 
 int main(int argc, char** argv){
     vector<string> train_vec;
@@ -34,6 +34,9 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
 
     convert(temp, argv[1]);
+    vector <string> tep;
+    cout << final_vocab[0] << endl;
+    //printToFile(final_vocab, tep);
     /*
     for(int i = 0; i < num; i++){
         cout << final_vocab.back() << "," << endl;;
@@ -64,7 +67,7 @@ void convert(vector<string> temp, char* file){
     string word = "";
     int check = 0;
     vector <string> final_array(num);
-    
+
     if(infile.is_open()){
         while(infile.get(character)){
                 if(character == ' ' && check == 0){
@@ -101,22 +104,30 @@ void convert(vector<string> temp, char* file){
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    /*for(int i = 0; i < num; i++){
+                    for(int i = 0; i < num; i++){
                         cout << final_array[i] << ",";
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;*/
+                    cout << endl;
 
                 }
         }
     }
     infile.close();
 
-    for(int i=0; i < final_array.size(); i++) {
-        cout << final_array[i] << ",";
-    }
-    cout << endl;
-    cout << endl;
+    
+
+    printToFile(temp, final_array);
+}
+
+
+void printToFile(vector<string> vocab, vector<string> label) {
+    ofstream file;
+    file.open("new_file.txt");
+
+    
+
+    file.close();
 }
 
 
