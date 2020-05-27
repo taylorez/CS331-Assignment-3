@@ -24,7 +24,7 @@ int main(int argc, char** argv){
     temp = final_vocab;
     int num = final_vocab.size();
     sort(final_vocab.begin(), final_vocab.end());
-    convert(temp, argv[1]);
+    //convert(temp, argv[1]);
     for(int i = 0; i < num; i++){
         cout << final_vocab.back() << "," << endl;;
         final_vocab.pop_back();
