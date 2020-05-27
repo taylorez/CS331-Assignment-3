@@ -6,7 +6,6 @@
 #include <bits/stdc++.h>
 
 
-
 using namespace std;
 
 
@@ -19,23 +18,33 @@ void convert(vector<string> temp, char* file);
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
 void classification(vector<string> data, vector<int> labels);
 void printToFile(vector<string> vocab, vector<string> label);
+vector<string> sort_vector(vector<string> data);
+
 
 int main(int argc, char** argv){
     vector<string> train_vec;
     train_vec = vocab(argv[1]);
 
+    
+
     vector<string> final_vocab;
-    final_vocab = set_words(train_vec);
+    final_vocab = sort_vector(train_vec);
     vector<string> temp;
     temp = final_vocab;
-
     int num = final_vocab.size();
 
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
 
     convert(temp, argv[1]);
-    vector <string> tep;
-    cout << final_vocab[0] << endl;
+
+    /*cout << final_vocab[num-1] << endl;
+    for(int i=final_vocab.size()-1; i >= 0; i--) {
+        cout << final_vocab[i] << ",";
+    }
+    cout << endl;*/
+
+    
+    
     //printToFile(final_vocab, tep);
     /*
     for(int i = 0; i < num; i++){
@@ -70,7 +79,7 @@ void convert(vector<string> temp, char* file){
 
     if(infile.is_open()){
         while(infile.get(character)){
-                if(character == ' ' && check == 0){
+                if(character == ' ' && check == 0 || character == '\t' && check==0){
                     check = 1;
                     lines.push_back(word);
                     word = "";
@@ -104,11 +113,11 @@ void convert(vector<string> temp, char* file){
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    for(int i = 0; i < num; i++){
-                        cout << final_array[i] << ",";
+                    /*for(int i = 0; i < num; i++){
+                        cout << final_array[i] << ","; //send to file here 
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;
+                    cout << endl;*/
 
                 }
         }
@@ -174,6 +183,41 @@ vector<string> set_words(vector<string> temp){
     return final_vec;
 }
 
+vector<string> sort_vector(vector<string> data) {
+    
+
+    sort(data.begin(), data.end());
+
+    for(int i=0; i < data.size(); i++) {
+        
+            cout << data[i] << ",";
+    }
+    cout << endl;
+    cout << endl;
+
+    vector <string> newData;
+
+    for(int i=0; i < data.size(); i++) {
+        if(i != 0) {
+            if(data[i] != data[i-1]) {
+                newData.push_back(data[i]);
+            } 
+        }
+        else {
+            newData.push_back(data[i]);
+        }
+    }
+
+    newData.push_back("classlabel");
+ 
+    for(int i=0; i < newData.size(); i++) {
+        cout << newData[i] << ",";
+    }
+    cout << endl;
+
+
+    return newData;
+}
 
 vector<string> vocab(char* file){
     char character;
@@ -189,8 +233,8 @@ vector<string> vocab(char* file){
                     lines.push_back(word);
                     word = "";
                 }
-                else{
-                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-'){
+                else{ //added tab character
+                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-' && character != '\t'){
                         character = tolower(character);
                         word = word + character;
                         check = 0;
