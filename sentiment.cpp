@@ -17,7 +17,7 @@ void convert(vector<string> temp, char* file);
 /////////////////////////
 //Start Classification
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
-void classification(vector<int> data, vector<int> labels);
+void classification(vector<string> data, vector<int> labels);
 
 
 int main(int argc, char** argv){
@@ -203,11 +203,21 @@ float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
     return accuracy;
 }
 
-void classification(vector<int> data, vector<int> labels) {
+void classification(vector<string> data, vector<int> labels) {
 
     /**
-     *
+     * data[i] corresponds with labels[i]?
+     * Maybe data as a 2d vector for each sentence?
+     * Then for each sentence:
+     * float pTrue = P(Class=1 | data[0]=labels[0], data[1]=labels[1] and so on)
+     * float pTrue = P(Class=0 | data[0]=labels[0], data[1]=labels[1] and so on)
+     * if(pTrue > pFalse) {
+     *      more likely to be true
+     * So the class label would be 1 otherwise it is predicted as 0
+     * do this for all of data and when done check the accuracy.
      */
+
+
 
 
     return;
