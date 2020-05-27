@@ -41,8 +41,8 @@ void convert(vector<string> temp, char* file){
         array[i] = temp.back();
         temp.pop_back();
     }
-    ifstream file;
-    file.open(file);
+    ifstream infile;
+    infile.open(file);
     //working here
 }
 
