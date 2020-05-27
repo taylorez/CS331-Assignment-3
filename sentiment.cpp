@@ -63,6 +63,8 @@ void convert(vector<string> temp, char* file){
     infile.open(file);
     string word = "";
     int check = 0;
+    vector <string> final_array(num);
+    
     if(infile.is_open()){
         while(infile.get(character)){
                 if(character == ' ' && check == 0){
@@ -92,23 +94,29 @@ void convert(vector<string> temp, char* file){
                             }
                         }
                     }
-                    string final_array[num];
+                    //string final_array[num];
                     for(int i = 0; i < num; i++){
                         final_array[i] = "0";
                     }
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    for(int i = 0; i < num; i++){
+                    /*for(int i = 0; i < num; i++){
                         cout << final_array[i] << ",";
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;
+                    cout << endl;*/
 
                 }
         }
     }
     infile.close();
+
+    for(int i=0; i < final_array.size(); i++) {
+        cout << final_array[i] << ",";
+    }
+    cout << endl;
+    cout << endl;
 }
 
 
