@@ -14,6 +14,11 @@ vector<string> vocab(char* file);
 vector<string> set_words(vector<string> temp);
 void convert(vector<string> temp, char* file);
 
+/////////////////////////
+//Start Classification
+float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
+void classification(vector<int> data, vector<int> labels);
+
 
 int main(int argc, char** argv){
     vector<string> train_vec;
@@ -119,8 +124,35 @@ vector<string> vocab(char* file){
     return lines;
 }
 
+/**
+ * This function checks the accuracy of the given vector labels
+ * i.e. 0 or 1 and compares it against the expect values.
+ * If im understanding right this will be kinda the final 
+ * function needed which will be what is printed 
+ */
+float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
+    int correct_prediction = 0; //our number of matches with actual value
+
+    for(int i=0; i < expectedTruths.size(); i++) {
+        if(myTruths[i] == expectedTruths[i]) { //then it is good so increment total matches
+            correct_prediction++;
+        }
+    }
+
+    float accuracy = ((float) correct_prediction) / ((float) expectedTruths.size()); //correct divided by total 
+
+    return accuracy;
+}
+
+void classification(vector<int> data, vector<int> labels) {
+
+    /**
+     *
+     */
 
 
+    return;
+}
 
 
 
