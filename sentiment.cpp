@@ -23,21 +23,24 @@ void classification(vector<int> data, vector<int> labels);
 int main(int argc, char** argv){
     vector<string> train_vec;
     train_vec = vocab(argv[1]);
+
     vector<string> final_vocab;
     final_vocab = set_words(train_vec);
     vector<string> temp;
     temp = final_vocab;
+
     int num = final_vocab.size();
-    sort(final_vocab.begin(), final_vocab.end());
 
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
 
-    //convert(temp, argv[1]);
+    convert(temp, argv[1]);
+    /*
     for(int i = 0; i < num; i++){
         cout << final_vocab.back() << "," << endl;;
         final_vocab.pop_back();
     }
     cout << endl;
+    */
     return 0;
 }
 
@@ -47,13 +50,65 @@ int main(int argc, char** argv){
 void convert(vector<string> temp, char* file){
     int num = temp.size();
     string array[num];
+
     for(int i = 0; i < num; i++){
         array[i] = temp.back();
         temp.pop_back();
     }
+
+    int count = 0;
+    char character;
+    vector<string> lines;
     ifstream infile;
     infile.open(file);
-    //working here
+    string word = "";
+    int check = 0;
+    if(infile.is_open()){
+        while(infile.get(character)){
+                if(character == ' ' && check == 0){
+                    check = 1;
+                    lines.push_back(word);
+                    word = "";
+                }
+                else{
+                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-'){
+                        character = tolower(character);
+                        word = word + character;
+                        check = 0;
+                    }
+                }
+                if(character == '\n'){
+                    count = lines.size();
+                    int count2 = 0;
+                    int temp2[count];
+                    for(int i = 0; i < count; i++){
+                        string temp1 = lines.back();
+                        lines.pop_back();
+                        for(int y = 0; y < num; y++){
+                            if(temp1 == array[y]){
+                                temp2[i] = y;
+                                count2++;
+                                break;
+                            }
+                        }
+                    }
+                    string final_array[num];
+                    for(int i = 0; i < num; i++){
+                        final_array[i] = "0";
+                    }
+                    for(int i = 1; i < count2 + 1; i++){
+                        final_array[temp2[i]] = "1";
+                    }
+                    for(int i = 0; i < num; i++){
+                        cout << final_array[i] << ",";
+                    }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
+                    cout << endl;
+                    cout << endl;
+
+                }
+        }
+    }
+    infile.close();
 }
 
 
@@ -92,6 +147,11 @@ vector<string> set_words(vector<string> temp){
     for(int i = 0; i < max; i++){
         final_vec.push_back(final_array[i]);
     }
+    sort(final_vec.begin(), final_vec.end(), greater<string>());
+    for(int i = 0; i < 50; i++){
+        final_vec.pop_back();
+    }
+    final_vec.insert(final_vec.begin(),"classlabel");
     return final_vec;
 }
 
@@ -111,7 +171,7 @@ vector<string> vocab(char* file){
                     word = "";
                 }
                 else{
-                    if(character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-'){
+                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-'){
                         character = tolower(character);
                         word = word + character;
                         check = 0;
@@ -119,7 +179,6 @@ vector<string> vocab(char* file){
                 }
         }
     }
-    lines.push_back("classlabel");
     infile.close();
     return lines;
 }
@@ -127,8 +186,8 @@ vector<string> vocab(char* file){
 /**
  * This function checks the accuracy of the given vector labels
  * i.e. 0 or 1 and compares it against the expect values.
- * If im understanding right this will be kinda the final 
- * function needed which will be what is printed 
+ * If im understanding right this will be kinda the final
+ * function needed which will be what is printed
  */
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
     int correct_prediction = 0; //our number of matches with actual value
@@ -139,7 +198,7 @@ float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
         }
     }
 
-    float accuracy = ((float) correct_prediction) / ((float) expectedTruths.size()); //correct divided by total 
+    float accuracy = ((float) correct_prediction) / ((float) expectedTruths.size()); //correct divided by total
 
     return accuracy;
 }
