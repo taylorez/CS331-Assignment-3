@@ -24,6 +24,9 @@ int main(int argc, char** argv){
     temp = final_vocab;
     int num = final_vocab.size();
     sort(final_vocab.begin(), final_vocab.end());
+
+    //at this point the words are all held in final_vocab and sending that and the file to read into convert
+
     //convert(temp, argv[1]);
     for(int i = 0; i < num; i++){
         cout << final_vocab.back() << "," << endl;;
@@ -34,6 +37,8 @@ int main(int argc, char** argv){
 }
 
 
+//this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
+//from there we will be at the classification part
 void convert(vector<string> temp, char* file){
     int num = temp.size();
     string array[num];
