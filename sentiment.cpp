@@ -29,30 +29,16 @@ int main(int argc, char** argv){
 
     vector<string> final_vocab;
     final_vocab = sort_vector(train_vec);
+    //Good
     vector<string> temp;
     temp = final_vocab;
     int num = final_vocab.size();
-
+    
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
 
     convert(temp, argv[1]);
 
-    /*cout << final_vocab[num-1] << endl;
-    for(int i=final_vocab.size()-1; i >= 0; i--) {
-        cout << final_vocab[i] << ",";
-    }
-    cout << endl;*/
-
     
-    
-    //printToFile(final_vocab, tep);
-    /*
-    for(int i = 0; i < num; i++){
-        cout << final_vocab.back() << "," << endl;;
-        final_vocab.pop_back();
-    }
-    cout << endl;
-    */
     return 0;
 }
 
@@ -60,7 +46,7 @@ int main(int argc, char** argv){
 //this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
 //from there we will be at the classification part
 void convert(vector<string> temp, char* file){
-    int num = temp.size();
+    /*int num = temp.size();
     string array[num];
 
     for(int i = 0; i < num; i++){
@@ -79,13 +65,13 @@ void convert(vector<string> temp, char* file){
 
     if(infile.is_open()){
         while(infile.get(character)){
-                if(character == ' ' && check == 0 || character == '\t' && check==0){
+                if(character == ' ' && check == 0){
                     check = 1;
                     lines.push_back(word);
                     word = "";
                 }
                 else{
-                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-'){
+                    if(ispunct(character) || character == '0' || character == '1' || character == '\t' || character == '\n') {
                         character = tolower(character);
                         word = word + character;
                         check = 0;
@@ -113,20 +99,85 @@ void convert(vector<string> temp, char* file){
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    /*for(int i = 0; i < num; i++){
+                    for(int i = 0; i < num; i++){
                         cout << final_array[i] << ","; //send to file here 
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;*/
+                    cout << endl;
 
                 }
         }
     }
-    infile.close();
+    infile.close();*/
+
+    //////////////////////
+    
+    ifstream refile;
+    refile.open(file);
+    
+    string line;
+    vector <string> sentences;
+    vector <vector <string> > brokenSentences;
+    
+    if(refile.is_open()){
+        while(getline(refile, line)) {
+            sentences.push_back(line);
+        }
+    }
+    refile.close();
+    
+    for(int i=0; i < sentences.size(); i++) {
+        string temp = sentences[i];
+        for(int j=0, len = temp.size(); j < len; j++) {
+            if(ispunct(temp[j]) || temp[j] == '0' || temp[j] == '1' || temp[j] == '\t' || temp[j] == '\n') {
+                temp.erase(j--, 1);
+                len = temp.size();
+            }
+        }
+        transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+        sentences[i] = temp;
+        string word;
+        vector <string> wordSentence;
+        istringstream iss(temp);
+        for(string s; iss >> s;)
+            wordSentence.push_back(s);
+
+        brokenSentences.push_back(wordSentence);
+        wordSentence.clear();
+        
+        
+    }
+
+    for(int i=0; i < brokenSentences.size(); i++) {
+        for(int j=0; j < brokenSentences[i].size(); j++) {
+            cout << brokenSentences[i][j] << "-";
+        }
+        cout << endl;
+    }
+
+    //temp is our vocab
+    vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
+    vector <string> indLabels; //labels for each sentence
+
+    for(int i=0; i < brokenSentences.size(); i++) {
+        //For each indivdual sentence
+        for(int j=0; j < brokenSentences[i].size(); j++) {
+            cout << brokenSentences[i][j] << "-";
+        }
+        cout << endl;
+    }
+    for(int i=0; i < temp.size(); i++) {
+
+    }
+
+
+
+
+    ///////////////////
 
     
 
-    printToFile(temp, final_array);
+    //printToFile(temp, final_array);
 }
 
 
@@ -184,19 +235,13 @@ vector<string> set_words(vector<string> temp){
 }
 
 vector<string> sort_vector(vector<string> data) {
-    
+    fflush(stdout);
 
+    
     sort(data.begin(), data.end());
 
-    for(int i=0; i < data.size(); i++) {
-        
-            cout << data[i] << ",";
-    }
-    cout << endl;
-    cout << endl;
 
     vector <string> newData;
-
     for(int i=0; i < data.size(); i++) {
         if(i != 0) {
             if(data[i] != data[i-1]) {
@@ -209,13 +254,7 @@ vector<string> sort_vector(vector<string> data) {
     }
 
     newData.push_back("classlabel");
- 
-    for(int i=0; i < newData.size(); i++) {
-        cout << newData[i] << ",";
-    }
-    cout << endl;
-
-
+    
     return newData;
 }
 
@@ -226,23 +265,33 @@ vector<string> vocab(char* file){
     infile.open(file);
     string word = "";
     int check = 0;
+    string line;
+    ////
+    vector <string> sentences;
     if(infile.is_open()){
-        while(infile.get(character)){
-                if(character == ' ' && check == 0){
-                    check = 1;
-                    lines.push_back(word);
-                    word = "";
-                }
-                else{ //added tab character
-                    if(character != '(' && character != ')' && character != '\n' && character != ' ' && character != '1' && character != '0' && character != '.' && character != ',' && character != '?' && character != '!' && character != '\'' && character != '-' && character != '\t'){
-                        character = tolower(character);
-                        word = word + character;
-                        check = 0;
-                    }
-                }
+        while(getline(infile, line)) {
+            sentences.push_back(line);
         }
     }
     infile.close();
+
+    for(int i=0; i < sentences.size(); i++) {
+        string temp = sentences[i];
+        for(int j=0, len = temp.size(); j < len; j++) {
+            if(ispunct(temp[j]) || temp[j] == '0' || temp[j] == '1' || temp[j] == '\t' || temp[j] == '\n') {
+                temp.erase(j--, 1);
+                len = temp.size();
+            }
+        }
+        transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+        string word;
+        istringstream iss(temp);
+        for(string s; iss >> s;)
+            lines.push_back(s);
+        
+        
+    }
+
     return lines;
 }
 
