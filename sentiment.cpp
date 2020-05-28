@@ -148,36 +148,36 @@ void convert(vector<string> temp, char* file){
         
     }
 
-    for(int i=0; i < brokenSentences.size(); i++) {
-        for(int j=0; j < brokenSentences[i].size(); j++) {
-            cout << brokenSentences[i][j] << "-";
-        }
-        cout << endl;
-    }
-
     //temp is our vocab
     vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
-    vector <string> indLabels; //labels for each sentence
-
+    
+    
     for(int i=0; i < brokenSentences.size(); i++) {
         //For each indivdual sentence
+        vector <string> indLabels(temp.size(), "0"); //labels for each sentence
+        
         for(int j=0; j < brokenSentences[i].size(); j++) {
-            cout << brokenSentences[i][j] << "-";
+            for(int k=0; k < temp.size(); k++) {
+                if(brokenSentences[i][j] == temp[k]) {
+                    indLabels[k] = "1";
+                }
+            }
         }
-        cout << endl;
+        
+        labels.push_back(indLabels);
     }
-    for(int i=0; i < temp.size(); i++) {
-
-    }
-
-
-
-
-    ///////////////////
 
     
+    
+    for(int i=0; i < labels.size(); i++) {
+        for(int j=0; j < labels[i].size(); j++) {
+            cout << labels[i][j] << ",";
+        }
+        cout << endl;
+        cout << endl;
+    }
 
-    //printToFile(temp, final_array);
+
 }
 
 
