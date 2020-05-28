@@ -4,14 +4,14 @@
 #include <fstream>
 #include <algorithm>
 #include <bits/stdc++.h>
-
+#include <cstring>
 
 using namespace std;
 
 
 vector<string> vocab(char* file);
 vector<string> set_words(vector<string> temp);
-void convert(vector<string> temp, char* file);
+vector <vector<string> > convert(vector<string> temp, char* file);
 
 /////////////////////////
 //Start Classification
@@ -19,6 +19,7 @@ float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
 void classification(vector<string> data, vector<int> labels);
 void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
+void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
 
 
 int main(int argc, char** argv){
@@ -45,73 +46,7 @@ int main(int argc, char** argv){
 
 //this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
 //from there we will be at the classification part
-void convert(vector<string> temp, char* file){
-    /*int num = temp.size();
-    string array[num];
-
-    for(int i = 0; i < num; i++){
-        array[i] = temp.back();
-        temp.pop_back();
-    }
-
-    int count = 0;
-    char character;
-    vector<string> lines;
-    ifstream infile;
-    infile.open(file);
-    string word = "";
-    int check = 0;
-    vector <string> final_array(num);
-
-    if(infile.is_open()){
-        while(infile.get(character)){
-                if(character == ' ' && check == 0){
-                    check = 1;
-                    lines.push_back(word);
-                    word = "";
-                }
-                else{
-                    if(ispunct(character) || character == '0' || character == '1' || character == '\t' || character == '\n') {
-                        character = tolower(character);
-                        word = word + character;
-                        check = 0;
-                    }
-                }
-                if(character == '\n'){
-                    count = lines.size();
-                    int count2 = 0;
-                    int temp2[count];
-                    for(int i = 0; i < count; i++){
-                        string temp1 = lines.back();
-                        lines.pop_back();
-                        for(int y = 0; y < num; y++){
-                            if(temp1 == array[y]){
-                                temp2[i] = y;
-                                count2++;
-                                break;
-                            }
-                        }
-                    }
-                    //string final_array[num];
-                    for(int i = 0; i < num; i++){
-                        final_array[i] = "0";
-                    }
-                    for(int i = 1; i < count2 + 1; i++){
-                        final_array[temp2[i]] = "1";
-                    }
-                    for(int i = 0; i < num; i++){
-                        cout << final_array[i] << ","; //send to file here 
-                    }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
-                    cout << endl;
-                    cout << endl;
-
-                }
-        }
-    }
-    infile.close();*/
-
-    //////////////////////
-    
+vector <vector<string> > convert(vector<string> temp, char* file){
     ifstream refile;
     refile.open(file);
     
@@ -167,27 +102,37 @@ void convert(vector<string> temp, char* file){
         labels.push_back(indLabels);
     }
 
-    
-    
-    for(int i=0; i < labels.size(); i++) {
-        for(int j=0; j < labels[i].size(); j++) {
-            cout << labels[i][j] << ",";
-        }
-        cout << endl;
-        cout << endl;
-    }
 
+    printToFile(temp, labels, "preprocessed_train.txt");
+
+    return labels;
 
 }
 
 
-void printToFile(vector<string> vocab, vector<string> label) {
-    ofstream file;
-    file.open("new_file.txt");
+void printToFile(vector<string> vocab, vector<vector <string> > labels, string file) {
+    ofstream wf;
+    wf.open(file.c_str());
 
-    
+    for(int i=0; i < vocab.size(); i++) {
+        wf << vocab[i];
+        if(i != vocab.size()-1) {
+            wf << ",";
+        }
+    }
+    wf << '\n';
 
-    file.close();
+    for(int i=0; i < labels.size(); i++) {
+        for(int j=0; j < labels[i].size(); j++) {
+            wf << labels[i][j];
+            if(j != labels[i].size()-1) {
+                wf << ",";
+            }
+        }
+        wf << '\n';
+    }
+
+    wf.close();
 }
 
 
