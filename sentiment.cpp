@@ -46,7 +46,7 @@ int main(int argc, char** argv){
 //this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
 //from there we will be at the classification part
 void convert(vector<string> temp, char* file){
-    int num = temp.size();
+    /*int num = temp.size();
     string array[num];
 
     for(int i = 0; i < num; i++){
@@ -63,7 +63,7 @@ void convert(vector<string> temp, char* file){
     int check = 0;
     vector <string> final_array(num);
 
-  /*  if(infile.is_open()){
+    if(infile.is_open()){
         while(infile.get(character)){
                 if(character == ' ' && check == 0){
                     check = 1;
@@ -107,8 +107,8 @@ void convert(vector<string> temp, char* file){
 
                 }
         }
-    }*/
-    infile.close();
+    }
+    infile.close();*/
 
     //////////////////////
     
@@ -153,6 +153,21 @@ void convert(vector<string> temp, char* file){
             cout << brokenSentences[i][j] << "-";
         }
         cout << endl;
+    }
+
+    //temp is our vocab
+    vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
+    vector <string> indLabels; //labels for each sentence
+
+    for(int i=0; i < brokenSentences.size(); i++) {
+        //For each indivdual sentence
+        for(int j=0; j < brokenSentences[i].size(); j++) {
+            cout << brokenSentences[i][j] << "-";
+        }
+        cout << endl;
+    }
+    for(int i=0; i < temp.size(); i++) {
+
     }
 
 
