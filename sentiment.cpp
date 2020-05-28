@@ -61,14 +61,25 @@ vector <vector<string> > convert(vector<string> temp, char* file){
     }
     refile.close();
     
+    
+    vector <string> value;
     for(int i=0; i < sentences.size(); i++) {
         string temp = sentences[i];
         for(int j=0, len = temp.size(); j < len; j++) {
-            if(ispunct(temp[j]) || temp[j] == '0' || temp[j] == '1' || temp[j] == '\t' || temp[j] == '\n') {
+            if(ispunct(temp[j]) || temp[j] == '\t' || temp[j] == '\n') {
                 temp.erase(j--, 1);
                 len = temp.size();
             }
         }
+        for(int j=0, len = temp.size(); j < len; j++) {
+            if(temp[j] == '0' || temp[j] == '1') {
+                if(j == temp.size()-2) {
+                    value.push_back(string(1, temp[j]));
+                }
+                
+            }
+        }
+        
         transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
         sentences[i] = temp;
         string word;
@@ -82,6 +93,11 @@ vector <vector<string> > convert(vector<string> temp, char* file){
         
         
     }
+
+    /*for(int i=0; i < value.size(); i++) {
+        cout << value[i] << ",";
+    }
+    cout << endl;*/
 
     //temp is our vocab
     vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
@@ -98,7 +114,7 @@ vector <vector<string> > convert(vector<string> temp, char* file){
                 }
             }
         }
-        
+        indLabels.push_back(value[i]);
         labels.push_back(indLabels);
     }
 
