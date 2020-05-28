@@ -33,7 +33,7 @@ int main(int argc, char** argv){
     vector<string> temp;
     temp = final_vocab;
     int num = final_vocab.size();
-    cout << "good" << endl;
+    
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
 
     convert(temp, argv[1]);
@@ -63,7 +63,7 @@ void convert(vector<string> temp, char* file){
     int check = 0;
     vector <string> final_array(num);
 
-    if(infile.is_open()){
+  /*  if(infile.is_open()){
         while(infile.get(character)){
                 if(character == ' ' && check == 0){
                     check = 1;
@@ -99,15 +99,15 @@ void convert(vector<string> temp, char* file){
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    /*for(int i = 0; i < num; i++){
+                    for(int i = 0; i < num; i++){
                         cout << final_array[i] << ","; //send to file here 
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;*/
+                    cout << endl;
 
                 }
         }
-    }
+    }*/
     infile.close();
 
     //////////////////////
@@ -117,6 +117,7 @@ void convert(vector<string> temp, char* file){
     
     string line;
     vector <string> sentences;
+    vector <vector <string> > brokenSentences;
     
     if(refile.is_open()){
         while(getline(refile, line)) {
@@ -124,7 +125,7 @@ void convert(vector<string> temp, char* file){
         }
     }
     refile.close();
-    vector <vector <string> > labels;
+    
     for(int i=0; i < sentences.size(); i++) {
         string temp = sentences[i];
         for(int j=0, len = temp.size(); j < len; j++) {
@@ -140,16 +141,18 @@ void convert(vector<string> temp, char* file){
         istringstream iss(temp);
         for(string s; iss >> s;)
             wordSentence.push_back(s);
-        
-        /*Do the compare/replace here*/
-        for(int j=0; j < wordSentence.size(); j++) {
-            cout << wordSentence[j] << "-";
-        }
-        cout << endl;
 
+        brokenSentences.push_back(wordSentence);
         wordSentence.clear();
         
         
+    }
+
+    for(int i=0; i < brokenSentences.size(); i++) {
+        for(int j=0; j < brokenSentences[i].size(); j++) {
+            cout << brokenSentences[i][j] << "-";
+        }
+        cout << endl;
     }
 
 
@@ -237,8 +240,6 @@ vector<string> sort_vector(vector<string> data) {
 
     newData.push_back("classlabel");
     
-
-    cout << "done" << endl;
     return newData;
 }
 
