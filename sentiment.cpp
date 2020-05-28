@@ -99,11 +99,11 @@ void convert(vector<string> temp, char* file){
                     for(int i = 1; i < count2 + 1; i++){
                         final_array[temp2[i]] = "1";
                     }
-                    for(int i = 0; i < num; i++){
+                    /*for(int i = 0; i < num; i++){
                         cout << final_array[i] << ","; //send to file here 
                     }                                   //at this point final_array holds 1 or 0 for one sentence, once looped back to while loop it will hold the second sentense
                     cout << endl;
-                    cout << endl;
+                    cout << endl;*/
 
                 }
         }
@@ -111,6 +111,48 @@ void convert(vector<string> temp, char* file){
     infile.close();
 
     //////////////////////
+    
+    ifstream refile;
+    refile.open(file);
+    
+    string line;
+    vector <string> sentences;
+    
+    if(refile.is_open()){
+        while(getline(refile, line)) {
+            sentences.push_back(line);
+        }
+    }
+    refile.close();
+    vector <vector <string> > labels;
+    for(int i=0; i < sentences.size(); i++) {
+        string temp = sentences[i];
+        for(int j=0, len = temp.size(); j < len; j++) {
+            if(ispunct(temp[j]) || temp[j] == '0' || temp[j] == '1' || temp[j] == '\t' || temp[j] == '\n') {
+                temp.erase(j--, 1);
+                len = temp.size();
+            }
+        }
+        transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+        sentences[i] = temp;
+        string word;
+        vector <string> wordSentence;
+        istringstream iss(temp);
+        for(string s; iss >> s;)
+            wordSentence.push_back(s);
+        
+        /*Do the compare/replace here*/
+        for(int j=0; j < wordSentence.size(); j++) {
+            cout << wordSentence[j] << "-";
+        }
+        cout << endl;
+
+        wordSentence.clear();
+        
+        
+    }
+
+
 
 
     ///////////////////
