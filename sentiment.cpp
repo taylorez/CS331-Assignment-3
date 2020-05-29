@@ -20,7 +20,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
 void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
-
+float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData);
 
 
 int main(int argc, char** argv){
@@ -36,7 +36,7 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
     vector <vector<string> > trainingData = convert(temp, argv[1], "preprocessed_train.txt");
     //Now we can train the data
-    
+    classification(final_vocab, trainingData);
 
 
     /*Get Testing Data*/
@@ -305,35 +305,66 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
     float positive = 0.0f;
     float negative = 0.0f;
 
-    float total = 0.0f;
 
     for(int i=0; i < trainingData.size(); i++) {
-        if(trainingData[i][trainingData[i].size()-1] == "1") {
-            positive += 1.0;
-        }
-        else {
-            negative += 1.0;
-        }
-        total += 1.0;
-        /*
-        if(probabilityGood > probabilityFalse) {
+        if(getProbability("1", trainingData[i], trainingData) > getProbability("0", trainingData[i], trainingData)) {
             predictedLabels.push_back("1");
         }
         else {
             predictedLabels.push_back("0");
         }
-
-    */
+    }
+    
+    /*
+    int correct=0;
+    for(int i=0; i < predictedLabels.size(); i++) {
+        if(predictedLabels[i] == trainingData[i][trainingData[i].size()-1]) {
+            correct++;
+        }
     }
 
+    float total = correct / predictedLabels.size();
 
-    return;
-
+    cout << "Accuracy: " << total << endl;*/
 
 
     return;
 }
 
+
+float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData) {
+    /*cout << "getting probability" << endl;
+    float probability = 1.0f;
+    int wordMatch = 0;
+    int classMatch = 0;
+    int classCheck;
+
+    for(int i=0; i < trainingData.size(); i++) {
+        if()
+    }
+    for(int i=0; i < trainingData.size(); i++) {
+        wordMatch = 0;
+        classMatch = 0;
+        for(int j=0; j < trainingData[i].size(); i++) {
+            if(sentence[j] == trainingData[i][j]) { //word match
+                wordMatch++;
+                if(sentence[sentence.size()-1] == trainingData[i][trainingData[i].size()-1]) {
+                    classMatch++;
+                }
+            }
+        }
+
+        probability += log((wordMatch+1) / (classMatch + 2));
+
+        if(id == trainingData[i][trainingData[i].size()-1]) {
+            classCheck++;
+        }
+    }
+
+    probability += log(classCheck / (trainingData.size()+1));*/
+    
+    return probability;
+}
 
 
 
