@@ -11,33 +11,45 @@ using namespace std;
 
 vector<string> vocab(char* file);
 vector<string> set_words(vector<string> temp);
-vector <vector<string> > convert(vector<string> temp, char* file);
+vector <vector<string> > convert(vector<string> temp, char* file, string outFile);
 
 /////////////////////////
 //Start Classification
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
-void classification(vector<string> data, vector<int> labels);
+void classification(vector<string> vocab, vector<vector <string> > trainingData);
 void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
 
 
+
 int main(int argc, char** argv){
+    /*Get Training Data*/
     vector<string> train_vec;
     train_vec = vocab(argv[1]);
-
-    
 
     vector<string> final_vocab;
     final_vocab = sort_vector(train_vec);
     //Good
     vector<string> temp;
     temp = final_vocab;
-    int num = final_vocab.size();
-    
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
+    vector <vector<string> > trainingData = convert(temp, argv[1], "preprocessed_train.txt");
+    //Now we can train the data
+    
 
-    convert(temp, argv[1]);
+
+    /*Get Testing Data*/
+    vector<string> test_vec;
+    test_vec = vocab(argv[1]);
+
+    vector<string> final_test_vocab;
+    final_test_vocab = sort_vector(test_vec);
+    //Good
+    vector<string> temp2;
+    temp2 = final_test_vocab;
+    //at this point the words are all held in final_vocab and sending that and the file to read into convert
+    vector <vector<string> > testingData = convert(temp2, argv[2], "preprocessed_test.txt");
 
     
     return 0;
@@ -46,7 +58,7 @@ int main(int argc, char** argv){
 
 //this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
 //from there we will be at the classification part
-vector <vector<string> > convert(vector<string> temp, char* file){
+vector <vector<string> > convert(vector<string> temp, char* file, string outFile){
     ifstream refile;
     refile.open(file);
     
@@ -119,7 +131,7 @@ vector <vector<string> > convert(vector<string> temp, char* file){
     }
 
 
-    printToFile(temp, labels, "preprocessed_train.txt");
+    printToFile(temp, labels, outFile);
 
     return labels;
 
@@ -276,7 +288,7 @@ float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
     return accuracy;
 }
 
-void classification(vector<string> data, vector<int> labels) {
+void classification(vector<string> vocab, vector<vector <string> > trainingData) {
 
     /**
      * data[i] corresponds with labels[i]?
@@ -289,7 +301,33 @@ void classification(vector<string> data, vector<int> labels) {
      * So the class label would be 1 otherwise it is predicted as 0
      * do this for all of data and when done check the accuracy.
      */
+    vector <string> predictedLabels;
+    float positive = 0.0f;
+    float negative = 0.0f;
 
+    float total = 0.0f;
+
+    for(int i=0; i < trainingData.size(); i++) {
+        if(trainingData[i][trainingData[i].size()-1] == "1") {
+            positive += 1.0;
+        }
+        else {
+            negative += 1.0;
+        }
+        total += 1.0;
+        /*
+        if(probabilityGood > probabilityFalse) {
+            predictedLabels.push_back("1");
+        }
+        else {
+            predictedLabels.push_back("0");
+        }
+
+    */
+    }
+
+
+    return;
 
 
 
