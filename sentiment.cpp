@@ -305,7 +305,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
     float positive = 0.0f;
     float negative = 0.0f;
 
-
+    cout << "Processing..." << endl;
     for(int i=0; i < trainingData.size(); i++) {
         if(getProbability("1", trainingData[i], trainingData) > getProbability("0", trainingData[i], trainingData)) {
             predictedLabels.push_back("1");
@@ -315,7 +315,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
         }
     }
     
-    /*
+    
     int correct=0;
     for(int i=0; i < predictedLabels.size(); i++) {
         if(predictedLabels[i] == trainingData[i][trainingData[i].size()-1]) {
@@ -323,9 +323,11 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
         }
     }
 
-    float total = correct / predictedLabels.size();
+    cout << "Correct: " << correct << endl;
+    cout << "Total: " << predictedLabels.size() << endl;
+    float total = ((float)correct) / ((float) predictedLabels.size());
 
-    cout << "Accuracy: " << total << endl;*/
+    cout << "Accuracy: " << total << endl;
 
 
     return;
@@ -333,35 +335,36 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
 
 
 float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData) {
-    /*cout << "getting probability" << endl;
+    
     float probability = 1.0f;
     int wordMatch = 0;
     int classMatch = 0;
-    int classCheck;
+    int classCheck = 0;
 
-    for(int i=0; i < trainingData.size(); i++) {
-        if()
-    }
+    wordMatch = 0;
+    classMatch = 0;
     for(int i=0; i < trainingData.size(); i++) {
         wordMatch = 0;
         classMatch = 0;
-        for(int j=0; j < trainingData[i].size(); i++) {
+        for(int j=0; j < trainingData[i].size(); j++) {
             if(sentence[j] == trainingData[i][j]) { //word match
-                wordMatch++;
+                wordMatch++; //number of total matches 
                 if(sentence[sentence.size()-1] == trainingData[i][trainingData[i].size()-1]) {
+                    //Word match and class maatch
                     classMatch++;
                 }
             }
         }
-
-        probability += log((wordMatch+1) / (classMatch + 2));
-
         if(id == trainingData[i][trainingData[i].size()-1]) {
             classCheck++;
         }
+
+        probability += log((wordMatch+1) / (classMatch + 2));
+
+       
     }
 
-    probability += log(classCheck / (trainingData.size()+1));*/
+    probability += log(classCheck / (trainingData.size()+1));
     
     return probability;
 }
