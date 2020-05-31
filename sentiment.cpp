@@ -305,7 +305,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
     float positive = 0.0f;
     float negative = 0.0f;
 
-
+    cout << "Processing..." << endl;
     for(int i=0; i < trainingData.size(); i++) {
         if(getProbability("1", trainingData[i], trainingData) > getProbability("0", trainingData[i], trainingData)) {
             predictedLabels.push_back("1");
