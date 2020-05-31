@@ -301,16 +301,29 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
      * So the class label would be 1 otherwise it is predicted as 0
      * do this for all of data and when done check the accuracy.
      */
+    /*Find P=good and P=False*/
+    int probGood = 0;
+    for(int i=0; i < trainingData.size(); i++) {
+        if(trainingData[i][trainingData[i].size()-1] == "1") {
+            probGood++;
+        }
+    }
+    float pGood = ((float)probGood) / ((float)trainingData.size()-1);
+    float pBad = 1.0 - pGood;
+
+
+    /*************************/
     vector <string> predictedLabels;
     float positive = 0.0f;
     float negative = 0.0f;
 
     cout << "Processing..." << endl;
     for(int i=0; i < trainingData.size(); i++) {
-        if(getProbability("1", trainingData[i], trainingData) > getProbability("0", trainingData[i], trainingData)) {
+        //find P(Class=1 | sentence[i] = traindata for each sentence) repeat to get probability of eeach sentence
+        if(getProbability("1", trainingData[i], trainingData) >= getProbability("0", trainingData[i], trainingData)) {
             predictedLabels.push_back("1");
         }
-        else {
+        else { //more likely to be false
             predictedLabels.push_back("0");
         }
     }
@@ -336,14 +349,16 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
 
 float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData) {
     
-    float probability = 1.0f;
+    //P(Class=id | data[0]=labels[0], data[1]=labels[1] and so on)
+
+    float probability = 1.0;
     int wordMatch = 0;
     int classMatch = 0;
     int classCheck = 0;
 
-    wordMatch = 0;
-    classMatch = 0;
+
     for(int i=0; i < trainingData.size(); i++) {
+
         wordMatch = 0;
         classMatch = 0;
         for(int j=0; j < trainingData[i].size(); j++) {
@@ -355,16 +370,16 @@ float getProbability(string id, vector <string> sentence, vector <vector <string
                 }
             }
         }
-        if(id == trainingData[i][trainingData[i].size()-1]) {
+        if(id == trainingData[i][trainingData[i].size()-1]) { 
             classCheck++;
         }
 
-        probability += log((wordMatch+1) / (classMatch + 2));
+        probability += log10(((wordMatch+1) / (classMatch+2))); //floating point exception, add 1 and 2
 
        
     }
 
-    probability += log(classCheck / (trainingData.size()+1));
+    probability += log10(((classCheck) / (trainingData.size()+1)));
     
     return probability;
 }
