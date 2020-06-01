@@ -461,7 +461,30 @@ float getProbability(string id, vector <string> sentence, vector <vector <string
     }
     float pGood = ((float)probGood) / ((float)trainingData.size()-1);
     float pBad = 1.0 - pGood;
-
+    float wordMatch = 0.0, classMatch = 0.0, idMatch = 0.0;
+    for(int i = 0; i < trainingData.size(); i++) {
+        for(int k=0; k < trainingData[i].size(); k++) {
+            if(trainingData[num][k] == trainingData[i][k]) {
+                probVec[k][2]++;
+                probVec[k][3]++;
+                wordMatch++;
+                if(trainingData[num][trainingData[num].size()-1] == trainingData[i][trainingData[i].size()-1]) {
+                    classMatch++;
+                    if(id == "1") {
+                        probVec[k][3] += 2;
+                    }
+                    else {
+                        probVec[k][1] += 2;
+                    }
+                }
+            }
+        }
+        if(id == trainingData[i][trainingData[i].size()-1]) {
+            idMatch++;
+        }
+        prob += log10((wordMatch+1) / (classMatch+2));
+    }
+    prob += log10(((idMatch) / (trainingData.size()+1)));
     //for(int i = 0; i < trainingData.size(); i++){
         for(int y = 0; y < trainingData[num].size(); y++){
             if(trainingData[num][y] == "0" && id == "0") {
@@ -478,9 +501,11 @@ float getProbability(string id, vector <string> sentence, vector <vector <string
             }
         }
     //}
-    prob = temp[0];
+    cout << prob << endl;
+    prob += temp[0];
     for(int i = 1; i < trainingData[0].size(); i++){
         prob = prob * temp[i];
+        cout << prob << endl;
     }
     if(id == "0"){
         prob = prob * pBad;
