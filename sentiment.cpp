@@ -16,12 +16,12 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
 /////////////////////////
 //Start Classification
 float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
-void classification(vector<string> vocab, vector<vector <string> > trainingData);
+void classification(float probVec[][4], vector<vector <string> > trainingData);
 void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
-float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData);
-vector <vector<int> > get_prob(vector <vector<string> > trainingData);
+float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData, float probVec[][4], int num);
+void get_prob(vector <vector<string> > trainingData, float probVec[][4]);
 
 
 int main(int argc, char** argv){
@@ -37,10 +37,19 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
     vector <vector<string> > trainingData = convert(temp, argv[1], "preprocessed_train.txt");
     //Now we can train the data
-    vector <vector<int> > probVec;
-    probVec = get_prob(trainingData);
+    float probVec[trainingData[0].size()][4];
+    get_prob(trainingData, probVec);
+    /*
+    for(int i = 0; i < 400; i++){
+        cout << probVec[i][0] << endl;
+        cout << probVec[i][1] << endl;
+        cout << probVec[i][2] << endl;
+        cout << probVec[i][3] << endl;
+        cout << endl;
+    }
+    */
 
-    classification(final_vocab, trainingData);
+    classification(probVec, trainingData);
 
 
     /*Get Testing Data*/
@@ -60,8 +69,8 @@ int main(int argc, char** argv){
 }
 
 
-vector <vector<int> > get_prob(vector <vector<string> > trainingData){
-    vector <vector<int> > probVec;
+void get_prob(vector <vector<string> > trainingData, float probVec[][4]){
+    //int probVec[trainingData[0].size()][4];
     int temp[trainingData[0].size()][4];
     for(int i = 0; i < trainingData.size(); i++){
         for(int y = 0; y < trainingData[i].size(); y++){
@@ -96,15 +105,13 @@ vector <vector<int> > get_prob(vector <vector<string> > trainingData){
     }
     float pGood = ((float)probGood) / ((float)trainingData.size()-1);
     float pBad = 1.0 - pGood;
-    /*
     for(int i = 0; i < trainingData[i].size(); i++){
-        probVec[i][0] = temp[i][0] / probBad;
-        probVec[i][1] = temp[i][1] / probGood;
-        probVec[i][2] = temp[i][2] / probBad;
-        probVec[i][3] = temp[i][3] / probGood;
+        probVec[i][0] = ((float)temp[i][0]) / probBad;
+        probVec[i][1] = ((float)temp[i][1]) / probGood;
+        probVec[i][2] = ((float)temp[i][2]) / probBad;
+        probVec[i][3] = ((float)temp[i][3]) / probGood;
     }
-    */
-    return probVec;
+    //return probVec;
 
 }
 
@@ -342,7 +349,7 @@ float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
     return accuracy;
 }
 
-void classification(vector<string> vocab, vector<vector <string> > trainingData) {
+void classification(float probVec[][4], vector<vector <string> > trainingData) {
 
     /**
      * data[i] corresponds with labels[i]?
@@ -374,7 +381,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
     cout << "Processing..." << endl;
     for(int i=0; i < trainingData.size(); i++) {
         //find P(Class=1 | sentence[i] = traindata for each sentence) repeat to get probability of eeach sentence
-        if(getProbability("1", trainingData[i], trainingData) >= getProbability("0", trainingData[i], trainingData)) {
+        if(getProbability("1", trainingData[i], trainingData, probVec, i) >= getProbability("0", trainingData[i], trainingData, probVec, i)) {
             predictedLabels.push_back("1");
         }
         else { //more likely to be false
@@ -401,10 +408,10 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
 }
 
 
-float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData) {
+float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData, float probVec[][4], int num) {
 
     //P(Class=id | data[0]=labels[0], data[1]=labels[1] and so on)
-
+/*
     float probability = 1.0;
     int wordMatch = 0;
     int classMatch = 0;
@@ -434,8 +441,55 @@ float getProbability(string id, vector <string> sentence, vector <vector <string
     }
 
     probability += log10(((classCheck) / (trainingData.size()+1)));
+*/
+    for(int i = 0; i < trainingData.size();){
+        for(int y = 0; y < 4; y++){
+            if(probVec[i][y] > 1.0){
+                probVec[i][y] = 1.0;
+            }
+        }
+    }
 
-    return probability;
+    float prob = 1.0;
+    float temp[trainingData[0].size()];
+
+    int probGood = 0;
+    for(int i=0; i < trainingData.size(); i++) {
+        if(trainingData[i][trainingData[i].size()-1] == "1") {
+            probGood++;
+        }
+    }
+    float pGood = ((float)probGood) / ((float)trainingData.size()-1);
+    float pBad = 1.0 - pGood;
+
+    //for(int i = 0; i < trainingData.size(); i++){
+        for(int y = 0; y < trainingData[num].size(); y++){
+            if(trainingData[num][y] == "0" && id == "0"){
+                temp[y] = probVec[y][0];
+            }
+            else if(trainingData[num][y] == "0" && id == "1"){
+                temp[y] = probVec[y][1];
+            }
+            else if(trainingData[num][y] == "1" && id == "0"){
+                temp[y] = probVec[y][2];
+            }
+            else if(trainingData[num][y] == "1" && id == "1"){
+                temp[y] = probVec[y][3];
+            }
+        }
+    //}
+    prob = temp[0];
+    for(int i = 1; i < trainingData[0].size(); i++){
+        prob = prob * temp[i];
+    }
+    if(id == "0"){
+        prob = prob * pBad;
+    }
+    else if(id == "1"){
+        prob = prob * pGood;
+    }
+
+    return prob;
 }
 
 
