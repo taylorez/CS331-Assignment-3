@@ -21,6 +21,7 @@ void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
 float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData);
+vector <vector<int> > get_prob(vector <vector<string> > trainingData);
 
 
 int main(int argc, char** argv){
@@ -36,6 +37,9 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
     vector <vector<string> > trainingData = convert(temp, argv[1], "preprocessed_train.txt");
     //Now we can train the data
+    vector <vector<int> > probVec;
+    probVec = get_prob(trainingData);
+
     classification(final_vocab, trainingData);
 
 
@@ -51,9 +55,59 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
     vector <vector<string> > testingData = convert(temp2, argv[2], "preprocessed_test.txt");
 
-    
+
     return 0;
 }
+
+
+vector <vector<int> > get_prob(vector <vector<string> > trainingData){
+    vector <vector<int> > probVec;
+    int temp[trainingData[0].size()][4];
+    for(int i = 0; i < trainingData.size(); i++){
+        for(int y = 0; y < trainingData[i].size(); y++){
+            temp[i][y] = 0;
+        }
+    }
+    for(int i = 0; i < trainingData.size(); i++){
+        for(int y = 0; y < trainingData[i].size(); y++){
+            if(trainingData[i][y] == "0" && trainingData[i][trainingData[i].size() - 1] == "0"){
+                temp[i][0]++;
+            }
+            else if(trainingData[i][y] == "0" && trainingData[i][trainingData[i].size() - 1] == "1"){
+                temp[i][1]++;
+            }
+            else if(trainingData[i][y] == "1" && trainingData[i][trainingData[i].size() - 1] == "0"){
+                temp[i][2]++;
+            }
+            else if(trainingData[i][y] == "1" && trainingData[i][trainingData[i].size() - 1] == "1"){
+                temp[i][3]++;
+            }
+        }
+    }
+    int probGood = 0;
+    int probBad = 0;
+    for(int i=0; i < trainingData.size(); i++) {
+        if(trainingData[i][trainingData[i].size()-1] == "1") {
+            probGood++;
+        }
+        else{
+            probBad++;
+        }
+    }
+    float pGood = ((float)probGood) / ((float)trainingData.size()-1);
+    float pBad = 1.0 - pGood;
+    /*
+    for(int i = 0; i < trainingData[i].size(); i++){
+        probVec[i][0] = temp[i][0] / probBad;
+        probVec[i][1] = temp[i][1] / probGood;
+        probVec[i][2] = temp[i][2] / probBad;
+        probVec[i][3] = temp[i][3] / probGood;
+    }
+    */
+    return probVec;
+
+}
+
 
 
 //this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
@@ -61,19 +115,19 @@ int main(int argc, char** argv){
 vector <vector<string> > convert(vector<string> temp, char* file, string outFile){
     ifstream refile;
     refile.open(file);
-    
+
     string line;
     vector <string> sentences;
     vector <vector <string> > brokenSentences;
-    
+
     if(refile.is_open()){
         while(getline(refile, line)) {
             sentences.push_back(line);
         }
     }
     refile.close();
-    
-    
+
+
     vector <string> value;
     for(int i=0; i < sentences.size(); i++) {
         string temp = sentences[i];
@@ -88,10 +142,10 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
                 if(j == temp.size()-2) {
                     value.push_back(string(1, temp[j]));
                 }
-                
+
             }
         }
-        
+
         transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
         sentences[i] = temp;
         string word;
@@ -102,8 +156,8 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
 
         brokenSentences.push_back(wordSentence);
         wordSentence.clear();
-        
-        
+
+
     }
 
     /*for(int i=0; i < value.size(); i++) {
@@ -113,12 +167,12 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
 
     //temp is our vocab
     vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
-    
-    
+
+
     for(int i=0; i < brokenSentences.size(); i++) {
         //For each indivdual sentence
         vector <string> indLabels(temp.size(), "0"); //labels for each sentence
-        
+
         for(int j=0; j < brokenSentences[i].size(); j++) {
             for(int k=0; k < temp.size(); k++) {
                 if(brokenSentences[i][j] == temp[k]) {
@@ -210,7 +264,7 @@ vector<string> set_words(vector<string> temp){
 vector<string> sort_vector(vector<string> data) {
     fflush(stdout);
 
-    
+
     sort(data.begin(), data.end());
 
 
@@ -219,7 +273,7 @@ vector<string> sort_vector(vector<string> data) {
         if(i != 0) {
             if(data[i] != data[i-1]) {
                 newData.push_back(data[i]);
-            } 
+            }
         }
         else {
             newData.push_back(data[i]);
@@ -227,7 +281,7 @@ vector<string> sort_vector(vector<string> data) {
     }
 
     newData.push_back("classlabel");
-    
+
     return newData;
 }
 
@@ -261,8 +315,8 @@ vector<string> vocab(char* file){
         istringstream iss(temp);
         for(string s; iss >> s;)
             lines.push_back(s);
-        
-        
+
+
     }
 
     return lines;
@@ -327,8 +381,8 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
             predictedLabels.push_back("0");
         }
     }
-    
-    
+
+
     int correct=0;
     for(int i=0; i < predictedLabels.size(); i++) {
         if(predictedLabels[i] == trainingData[i][trainingData[i].size()-1]) {
@@ -348,7 +402,7 @@ void classification(vector<string> vocab, vector<vector <string> > trainingData)
 
 
 float getProbability(string id, vector <string> sentence, vector <vector <string> > trainingData) {
-    
+
     //P(Class=id | data[0]=labels[0], data[1]=labels[1] and so on)
 
     float probability = 1.0;
@@ -363,24 +417,24 @@ float getProbability(string id, vector <string> sentence, vector <vector <string
         classMatch = 0;
         for(int j=0; j < trainingData[i].size(); j++) {
             if(sentence[j] == trainingData[i][j]) { //word match
-                wordMatch++; //number of total matches 
+                wordMatch++; //number of total matches
                 if(sentence[sentence.size()-1] == trainingData[i][trainingData[i].size()-1]) {
                     //Word match and class maatch
                     classMatch++;
                 }
             }
         }
-        if(id == trainingData[i][trainingData[i].size()-1]) { 
+        if(id == trainingData[i][trainingData[i].size()-1]) {
             classCheck++;
         }
 
         probability += log10(((wordMatch+1) / (classMatch+2))); //floating point exception, add 1 and 2
 
-       
+
     }
 
     probability += log10(((classCheck) / (trainingData.size()+1)));
-    
+
     return probability;
 }
 
