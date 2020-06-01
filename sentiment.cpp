@@ -1,3 +1,9 @@
+/** 
+ * Names: Brayden Tremper & Ezra Taylor (GROUP)
+ * Emails: tremperb@oregonstate.edu && taylorez@oregonstate.edu
+ * Date: 6/1/2020
+ */ 
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,13 +16,8 @@ using namespace std;
 
 
 vector<string> vocab(char* file);
-vector<string> set_words(vector<string> temp);
 vector <vector<string> > convert(vector<string> temp, char* file, string outFile);
-
-/////////////////////////
-//Start Classification
-float check_accuracy(vector<int> myTruths, vector<int> expectedTruths);
-void classification(vector<vector<float> > training, vector<vector <string> > testingData, int max_size);
+void classification(vector<vector<float> > training, vector<vector <string> > testingData, int max_size, char* trainedOn, char* testedOn);
 void printToFile(vector<string> vocab, vector<string> label);
 vector<string> sort_vector(vector<string> data);
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file);
@@ -40,10 +41,8 @@ int main(int argc, char** argv){
     vector <vector<float> > probVec;
     probVec = get_prob(trainingData);
 
-    //classification(final_vocab, trainingData);
 
-    int max_size = temp.size();
-    cout << max_size << endl;
+    int max_size = temp.size(); //so we dont use the class label
     /*Get Testing Data*/
     
     cout << "Testing Against " << argv[2] << endl;
@@ -52,7 +51,7 @@ int main(int argc, char** argv){
     //at this point the words are all held in final_vocab and sending that and the file to read into convert
     vector <vector<string> > testingData = convert(temp, argv[2], "preprocessed_test.txt");
 
-    classification(probVec, testingData, max_size);
+    classification(probVec, testingData, max_size, argv[1], argv[2]);
 
     return 0;
 }
@@ -98,12 +97,12 @@ vector <vector<float> > get_prob(vector <vector<string> > trainingData){
     }
     float pGood = ((float)probGood) / ((float)trainingData.size()-1);
     float pBad = 1.0 - pGood;
-    cout << "Preproccessing..." << endl;
     for(int i = 0; i < trainingData[0].size(); i++){
         probVec[i].push_back(((float)temp[i][0]+1) / (probBad+2));
         probVec[i].push_back(((float)temp[i][1]+1) / (probGood+2));
         probVec[i].push_back(((float)temp[i][2]+1) / (probBad+2));
         probVec[i].push_back(((float)temp[i][3]+1) / (probGood+2));
+        //This is just in case something odd happens
         for(int y=0; y < 4; y++) {
             if(probVec[i][y] > 1.0){
                 probVec[i][y] = 1.0;
@@ -113,8 +112,6 @@ vector <vector<float> > get_prob(vector <vector<string> > trainingData){
             }
         }
     }
-    cout << "Done..." << endl;
-    
 
     return probVec;
 
@@ -122,8 +119,9 @@ vector <vector<float> > get_prob(vector <vector<string> > trainingData){
 
 
 
-//this function still needs to convert the file to 0 and 1, i will finish this part. my plan was to call another function in this function sending the new file of 0 and 1 to it
-//from there we will be at the classification part
+/**
+ * This function convert the data to its 1 or 0 format
+ */
 vector <vector<string> > convert(vector<string> temp, char* file, string outFile){
     ifstream refile;
     refile.open(file);
@@ -144,7 +142,7 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
     for(int i=0; i < sentences.size(); i++) {
         string temp = sentences[i];
         for(int j=0, len = temp.size(); j < len; j++) {
-            if(ispunct(temp[j]) || temp[j] == '\t' || temp[j] == '\n') {
+            if(ispunct(temp[j]) || temp[j] == '\t' || temp[j] == '\n') { //check for punctuation and some other features
                 temp.erase(j--, 1);
                 len = temp.size();
             }
@@ -172,10 +170,6 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
 
     }
 
-    /*for(int i=0; i < value.size(); i++) {
-        cout << value[i] << ",";
-    }
-    cout << endl;*/
 
     //temp is our vocab
     vector <vector <string> > labels; //the labels for each sentence 0,1,0 blah but for each sentence
@@ -203,7 +197,10 @@ vector <vector<string> > convert(vector<string> temp, char* file, string outFile
 
 }
 
-
+/**
+ * Prints our preprocessed data to file
+ * 
+ */ 
 void printToFile(vector<string> vocab, vector<vector <string> > labels, string file) {
     ofstream wf;
     wf.open(file.c_str());
@@ -229,50 +226,9 @@ void printToFile(vector<string> vocab, vector<vector <string> > labels, string f
     wf.close();
 }
 
-
-vector<string> set_words(vector<string> temp){
-    int num = temp.size();
-    string array[num];
-    for(int i = 0; i < num; i++){
-        array[i] = temp.back();
-        temp.pop_back();
-    }
-    string final_array[num];
-    final_array[0] = array[0];
-    int count = 0;
-    int max = 1;
-    string temp_s;
-    int good = 1;
-    for(int i = 1; i < num; i++){
-        temp_s = array[i];
-        good = 1;
-        count = 0;
-        while(count < max){
-            if(temp_s == final_array[count]){
-                good = 0;
-                count = max;
-            }
-            else{
-                count++;
-            }
-        }
-        if(good == 1){
-            final_array[max] = temp_s;
-            max++;
-        }
-    }
-    vector<string> final_vec;
-    for(int i = 0; i < max; i++){
-        final_vec.push_back(final_array[i]);
-    }
-    sort(final_vec.begin(), final_vec.end(), greater<string>());
-    for(int i = 0; i < 50; i++){
-        final_vec.pop_back();
-    }
-    final_vec.insert(final_vec.begin(),"classlabel");
-    return final_vec;
-}
-
+/**
+ * This function simply sorts our vectoor in alphabetical order
+ */
 vector<string> sort_vector(vector<string> data) {
     fflush(stdout);
 
@@ -297,6 +253,9 @@ vector<string> sort_vector(vector<string> data) {
     return newData;
 }
 
+/**
+ * This function gets and seperates our vocab from the given file
+ */
 vector<string> vocab(char* file){
     char character;
     vector<string> lines;
@@ -334,32 +293,13 @@ vector<string> vocab(char* file){
     return lines;
 }
 
-/**
- * This function checks the accuracy of the given vector labels
- * i.e. 0 or 1 and compares it against the expect values.
- * If im understanding right this will be kinda the final
- * function needed which will be what is printed
- */
-float check_accuracy(vector<int> myTruths, vector<int> expectedTruths) {
-    int correct_prediction = 0; //our number of matches with actual value
-
-    for(int i=0; i < expectedTruths.size(); i++) {
-        if(myTruths[i] == expectedTruths[i]) { //then it is good so increment total matches
-            correct_prediction++;
-        }
-    }
-
-    float accuracy = ((float) correct_prediction) / ((float) expectedTruths.size()); //correct divided by total
-
-    return accuracy;
-}
 
 /**
  * This function classifies our data by getting the probability of the occurences
  * and predicts the label of the review
  * 
  */
-void classification(vector<vector <float> > train, vector<vector <string> > testingData, int max_size) {
+void classification(vector<vector <float> > train, vector<vector <string> > testingData, int max_size, char* trainedOn, char* testedOn) {
 
     /**
      * data[i] corresponds with labels[i]?
@@ -408,7 +348,22 @@ void classification(vector<vector <float> > train, vector<vector <string> > test
     cout << "Accuracy: " << total << "%" << endl;
 
     //Print to file
+    string outfile = "results.txt";
+    ofstream wf;
+    wf.open(outfile.c_str(), std::ios_base::app);
+    /////
+    wf << "Results" << endl;
+    wf << endl;
+    wf << "Training On: " << trainedOn << endl;
+    wf << "Testing On: " << testedOn << endl;
+    wf << endl;
+    wf << "Correct: " << correct << endl;
+    wf << "Total: " << predictedLabels.size() << endl;
+    wf << "Accuracy: " << total << "%" << endl;
+    wf << endl;
 
+    ////
+    wf.close();
     return;
 }
 

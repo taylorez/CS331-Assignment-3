@@ -1,0 +1,18 @@
+Results
+
+Training On: trainingSet.txt
+Testing On: trainingSet.txt
+
+Correct: 478
+Total: 499
+Accuracy: 95.7916%
+
+Results
+
+Training On: trainingSet.txt
+Testing On: testSet.txt
+
+Correct: 377
+Total: 497
+Accuracy: 75.8551%
+
